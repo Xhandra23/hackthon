@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codegnan Placement Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#12172B;
+    --ink-2:#1C2340;
+    --paper:#F5F4EF;
+    --paper-2:#EDEBE2;
+    --amber:#FFB627;
+    --amber-dim:#8a6a1f;
+    --green:#2F7A4E;
+    --green-bg:#E4F1E8;
+    --red:#C1443C;
+    --red-bg:#FBE7E5;
+    --slate:#666B7A;
+    --line:#DEDBD0;
+    --line-dark:#2B3355;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Work Sans',sans-serif;}
+  .mono{font-family:'Space Mono',monospace;}
+  ::selection{background:var(--amber);color:var(--ink);}
+
+  /* ---------- Header ---------- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:18px 32px;background:var(--ink);color:var(--paper);
+    border-bottom:3px solid var(--amber);
+  }
+  .brand{display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .brand-mark{
+    width:30px;height:30px;background:var(--amber);border-radius:3px;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Mono',monospace;font-weight:700;color:var(--ink);font-size:14px;
+  }
+  .brand-text{font-weight:800;letter-spacing:0.5px;font-size:15px;}
+  .brand-sub{font-family:'Space Mono',monospace;font-size:10px;color:#9CA3C0;letter-spacing:1.5px;margin-top:1px;}
+  .top-right{display:flex;align-items:center;gap:16px;font-size:13px;color:#B9BEDA;}
+  .pill{
+    padding:6px 12px;border:1px solid #3A4270;border-radius:20px;font-family:'Space Mono',monospace;
+    font-size:11px;letter-spacing:0.5px;
+  }
+  .logout-btn{
+    background:transparent;border:1px solid #3A4270;color:#DADDF0;padding:7px 14px;border-radius:6px;
+    cursor:pointer;font-family:'Work Sans',sans-serif;font-size:13px;font-weight:600;
+  }
+  .logout-btn:hover{border-color:var(--amber);color:var(--amber);}
+
+  /* ---------- Landing ---------- */
+  .hero{
+    background:var(--ink);color:var(--paper);padding:64px 32px 56px;
+    position:relative;overflow:hidden;
+  }
+  .hero-inner{max-width:1100px;margin:0 auto;}
+  .eyebrow{font-family:'Space Mono',monospace;color:var(--amber);font-size:12px;letter-spacing:2px;margin-bottom:18px;}
+  .hero h1{
+    font-size:52px;line-height:1.05;margin:0 0 20px;font-weight:800;max-width:720px;letter-spacing:-1px;
+  }
+  .hero p{font-size:17px;color:#B9BEDA;max-width:540px;line-height:1.6;margin:0 0 32px;}
+  .hero-ctas{display:flex;gap:14px;margin-bottom:56px;}
+  .btn-primary{
+    background:var(--amber);color:var(--ink);border:none;padding:14px 26px;border-radius:6px;
+    font-weight:700;font-size:14px;cursor:pointer;font-family:'Work Sans',sans-serif;
+  }
+  .btn-primary:hover{background:#ffc24e;}
+  .btn-ghost{
+    background:transparent;color:var(--paper);border:1px solid #3A4270;padding:14px 26px;border-radius:6px;
+    font-weight:600;font-size:14px;cursor:pointer;font-family:'Work Sans',sans-serif;
+  }
+  .btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+
+  /* split-flap board */
+  .board{
+    background:#0B0E1D;border:1px solid #2B3355;border-radius:10px;padding:20px 24px;max-width:1100px;
+  }
+  .board-head{
+    display:grid;grid-template-columns:1.6fr 1.6fr 1fr 1fr 1fr;gap:10px;
+    font-family:'Space Mono',monospace;font-size:10px;color:#6C7396;letter-spacing:1.5px;
+    padding:0 4px 10px;border-bottom:1px solid #262C50;margin-bottom:6px;
+  }
+  .board-row{
+    display:grid;grid-template-columns:1.6fr 1.6fr 1fr 1fr 1fr;gap:10px;align-items:center;
+    padding:11px 4px;border-bottom:1px solid #1D2242;
+  }
+  .board-row:last-child{border-bottom:none;}
+  .flap{
+    font-family:'Space Mono',monospace;background:#171C38;color:var(--amber);
+    padding:4px 8px;border-radius:3px;font-size:13px;display:inline-block;letter-spacing:0.5px;
+  }
+  .board-cell{font-family:'Space Mono',monospace;font-size:13px;color:#DADDF0;}
+  .status-chip{
+    font-family:'Space Mono',monospace;font-size:10px;padding:4px 8px;border-radius:3px;letter-spacing:1px;
+    display:inline-block;
+  }
+  .status-open{background:#173829;color:#5FD98A;}
+  .status-closing{background:#3A2E12;color:var(--amber);}
+
+  .stats-strip{
+    display:flex;max-width:1100px;margin:44px auto 0;padding:0 32px 0;gap:0;
+  }
+  .stat{flex:1;padding:0 24px;border-left:1px solid #2B3355;}
+  .stat:first-child{border-left:none;padding-left:0;}
+  .stat-num{font-family:'Space Mono',monospace;font-size:30px;color:var(--amber);font-weight:700;}
+  .stat-label{font-size:12px;color:#9CA3C0;margin-top:4px;}
+
+  /* role select */
+  .role-section{max-width:1100px;margin:0 auto;padding:56px 32px 72px;}
+  .section-title{font-size:22px;font-weight:800;margin-bottom:6px;}
+  .section-sub{color:var(--slate);font-size:14px;margin-bottom:28px;}
+  .role-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px;}
+  .role-card{
+    background:#fff;border:1px solid var(--line);border-radius:10px;padding:26px;cursor:pointer;
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .role-card:hover{transform:translateY(-3px);border-color:var(--ink);}
+  .role-num{font-family:'Space Mono',monospace;color:var(--amber-dim);font-size:12px;margin-bottom:14px;}
+  .role-card h3{margin:0 0 8px;font-size:18px;}
+  .role-card p{margin:0;color:var(--slate);font-size:13.5px;line-height:1.55;}
+
+  /* ---------- Auth form ---------- */
+  .auth-wrap{max-width:420px;margin:70px auto;padding:0 24px;}
+  .auth-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:32px;}
+  .auth-card h2{margin:0 0 6px;font-size:20px;}
+  .auth-card .sub{color:var(--slate);font-size:13px;margin-bottom:22px;}
+  .field{margin-bottom:16px;}
+  .field label{display:block;font-size:12px;font-weight:600;margin-bottom:6px;color:var(--ink);}
+  .field input, .field select{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:6px;font-size:14px;
+    font-family:'Work Sans',sans-serif;background:var(--paper);
+  }
+  .field input:focus, .field select:focus{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber);}
+  .back-link{background:none;border:none;color:var(--slate);font-size:13px;cursor:pointer;padding:0;margin-bottom:18px;}
+  .back-link:hover{color:var(--ink);}
+
+  /* ---------- Dashboard shell ---------- */
+  .shell{display:flex;min-height:calc(100vh - 68px);}
+  .sidebar{width:220px;background:var(--ink);color:#DADDF0;padding:24px 14px;flex-shrink:0;}
+  .side-label{font-family:'Space Mono',monospace;font-size:10px;color:#6C7396;letter-spacing:1.5px;padding:0 10px 10px;}
+  .side-item{
+    padding:10px 12px;border-radius:6px;font-size:14px;cursor:pointer;margin-bottom:4px;font-weight:500;
+  }
+  .side-item:hover{background:#1C2340;}
+  .side-item.active{background:var(--amber);color:var(--ink);font-weight:700;}
+  .content{flex:1;padding:32px 36px;max-width:1140px;}
+  .content h1{font-size:24px;margin:0 0 4px;}
+  .content .lede{color:var(--slate);font-size:14px;margin-bottom:26px;}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:22px;margin-bottom:20px;}
+  .card h3{margin:0 0 4px;font-size:16px;}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+
+  .kpi{background:#fff;border:1px solid var(--line);border-radius:10px;padding:18px 20px;}
+  .kpi-num{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--ink);}
+  .kpi-label{font-size:12px;color:var(--slate);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  th{
+    text-align:left;font-family:'Space Mono',monospace;font-size:10.5px;color:var(--slate);
+    letter-spacing:1px;padding:8px 10px;border-bottom:1px solid var(--line);font-weight:400;
+  }
+  td{padding:11px 10px;border-bottom:1px solid var(--paper-2);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+
+  .tag{
+    font-family:'Space Mono',monospace;font-size:10.5px;padding:3px 8px;border-radius:3px;display:inline-block;
+  }
+  .tag-eligible{background:var(--green-bg);color:var(--green);}
+  .tag-ineligible{background:var(--red-bg);color:var(--red);}
+  .tag-applied{background:#EFEAFB;color:#6E4FCC;}
+  .tag-shortlisted{background:#E4F1E8;color:var(--green);}
+  .tag-interview{background:#FEF3D9;color:var(--amber-dim);}
+  .tag-selected{background:var(--ink);color:var(--amber);}
+  .tag-rejected{background:var(--red-bg);color:var(--red);}
+  .tag-withdrawn{background:#EDEBE2;color:var(--slate);}
+
+  .btn-sm{
+    font-size:12.5px;padding:7px 12px;border-radius:5px;border:1px solid var(--line);background:#fff;
+    cursor:pointer;font-weight:600;font-family:'Work Sans',sans-serif;margin-right:6px;
+  }
+  .btn-sm.solid{background:var(--ink);color:var(--amber);border-color:var(--ink);}
+  .btn-sm.solid:hover{background:#000;}
+  .btn-sm.danger{color:var(--red);border-color:var(--red-bg);}
+  .btn-sm.danger:hover{background:var(--red-bg);}
+  .btn-sm:disabled{opacity:0.4;cursor:not-allowed;}
+
+  .empty{padding:40px 20px;text-align:center;color:var(--slate);font-size:14px;}
+  .toast{
+    position:fixed;bottom:24px;right:24px;background:var(--ink);color:var(--amber);padding:13px 18px;
+    border-radius:8px;font-size:13.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,0.25);
+    display:none;z-index:100;font-family:'Space Mono',monospace;
+  }
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(18,23,43,0.5);display:none;align-items:center;justify-content:center;z-index:90;
+  }
+  .modal{background:#fff;border-radius:10px;padding:28px;max-width:480px;width:92%;max-height:85vh;overflow-y:auto;}
+  .modal h3{margin-top:0;}
+  .modal-close{float:right;background:none;border:none;font-size:18px;cursor:pointer;color:var(--slate);}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  select, input{color:var(--ink);}
+
+  /* notifications */
+  .bell-wrap{position:relative;}
+  .bell-btn{
+    background:transparent;border:1px solid #3A4270;color:#DADDF0;width:34px;height:34px;border-radius:8px;
+    cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;font-size:15px;
+  }
+  .bell-btn:hover{border-color:var(--amber);color:var(--amber);}
+  .bell-dot{
+    position:absolute;top:-3px;right:-3px;background:var(--red);color:#fff;font-size:9px;font-family:'Space Mono',monospace;
+    min-width:15px;height:15px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;
+  }
+  .notif-panel{
+    position:absolute;top:44px;right:0;width:300px;background:#fff;border:1px solid var(--line);border-radius:10px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.18);z-index:80;max-height:360px;overflow-y:auto;
+  }
+  .notif-item{padding:12px 16px;border-bottom:1px solid var(--paper-2);font-size:13px;color:var(--ink);}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item .n-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--slate);margin-top:3px;}
+
+  /* filter bar */
+  .filter-bar{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .filter-bar input, .filter-bar select{padding:9px 11px;border:1px solid var(--line);border-radius:6px;font-size:13px;background:#fff;}
+  .filter-bar input{width:160px;}
+
+  /* pending approval screen */
+  .pending-wrap{max-width:480px;margin:90px auto;text-align:center;padding:0 24px;}
+  .pending-icon{
+    width:56px;height:56px;border-radius:50%;background:#FEF3D9;color:var(--amber-dim);
+    display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 20px;
+  }
+
+  /* analytics bars */
+  .bar-row{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+  .bar-label{width:110px;font-size:12.5px;flex-shrink:0;}
+  .bar-track{flex:1;background:var(--paper-2);border-radius:5px;height:20px;overflow:hidden;}
+  .bar-fill{background:var(--ink);height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;}
+  .bar-fill.amber{background:var(--amber);}
+  .bar-fill span{font-family:'Space Mono',monospace;font-size:10.5px;color:var(--amber);}
+  .bar-fill.amber span{color:var(--ink);}
+  .funnel-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;}
+  .funnel-step{text-align:center;}
+  .funnel-num{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;}
+  .funnel-lbl{font-size:11px;color:var(--slate);margin-top:2px;}
+  .funnel-arrow{color:var(--line);font-size:16px;}
+
+  .badge-pending{background:#FEF3D9;color:var(--amber-dim);font-family:'Space Mono',monospace;font-size:10px;padding:3px 8px;border-radius:3px;}
+
+  @media(max-width:900px){
+    .hero h1{font-size:34px;}
+    .role-grid{grid-template-columns:1fr;}
+    .notif-panel{width:260px;right:-60px;}
+    .board-head,.board-row{grid-template-columns:1.4fr 1.4fr 0.8fr 0.8fr 0.8fr;font-size:10px;}
+    .shell{flex-direction:column;}
+    .sidebar{width:100%;display:flex;overflow-x:auto;gap:6px;}
+    .side-item{white-space:nowrap;}
+    .grid-2,.grid-3{grid-template-columns:1fr;}
+    .stats-strip{flex-direction:column;gap:16px;}
+    .stat{border-left:none;padding-left:0;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand" onclick="goLanding()">
+    <div class="brand-mark">C</div>
+    <div>
+      <div class="brand-text">CODEGNAN PLACEMENT CONTROL</div>
+      <div class="brand-sub">DATA AVENGERS · v1.0</div>
+    </div>
+  </div>
+  <div class="top-right" id="topRight"></div>
+</div>
+
+<div id="app"></div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modalBg"><div class="modal" id="modalBody"></div></div>
+
+<script>
+/* ================= STORAGE HELPERS ================= */
+async function getList(key){
+  try{
+    const r = await window.storage.get(key, true);
+    return r ? JSON.parse(r.value) : [];
+  }catch(e){ return []; }
+}
+async function setList(key, val){
+  try{ await window.storage.set(key, JSON.stringify(val), true); }catch(e){ console.error(e); }
+}
+
+function uid(prefix){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  clearTimeout(window._toastTimer);
+  window._toastTimer = setTimeout(()=>{ t.style.display='none'; }, 2600);
+}
+
+function closeModal(){ document.getElementById('modalBg').style.display='none'; }
+function openModal(html){
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalBg').style.display='flex';
+}
+
+/* ================= STATE ================= */
+let currentUser = null; // {id, name, role, ...}
+let currentView = 'landing';
+
+/* ================= SEED DATA ================= */
+async function seedIfEmpty(){
+  let drives = await getList('drives');
+  if(drives.length === 0){
+    drives = [
+      {id:uid('drv'), company:'Nimbus Cloudworks', role:'SDE-1 (Backend)', package:'8.5 LPA', branch:'ANY', cgpaCutoff:7.0, backlogRule:'no-active', deadline:'2026-08-25', status:'open', recruiterName:'Priya Menon'},
+      {id:uid('drv'), company:'Rangoli Fintech', role:'Associate Analyst', package:'6.2 LPA', branch:'CSE,IT', cgpaCutoff:6.5, backlogRule:'max-1', deadline:'2026-08-20', status:'open', recruiterName:'Arvind Rao'},
+      {id:uid('drv'), company:'Veltrix Systems', role:'QA Engineer', package:'5.0 LPA', branch:'ANY', cgpaCutoff:6.0, backlogRule:'max-2', deadline:'2026-08-18', status:'closing', recruiterName:'Sana Fatima'},
+      {id:uid('drv'), company:'Orbitwave AI', role:'ML Intern → FTE', package:'10.0 LPA', branch:'CSE,AIML', cgpaCutoff:8.0, backlogRule:'no-active', deadline:'2026-09-02', status:'open', recruiterName:'Priya Menon'},
+    ];
+    await setList('drives', drives);
+  }
+  let students = await getList('students');
+  if(students.length === 0){
+    students = [
+      {id:uid('stu'), name:'Keerthi Vaddi', branch:'CSE', batch:'2026', cgpa:8.4, backlogs:0, skills:'React, Node, SQL', resume:'keerthi_resume.pdf', status:'approved'},
+      {id:uid('stu'), name:'Rahul Bandi', branch:'IT', batch:'2026', cgpa:6.8, backlogs:1, skills:'Java, Spring', resume:'rahul_resume.pdf', status:'approved'},
+      {id:uid('stu'), name:'Ananya Kotha', branch:'ECE', batch:'2026', cgpa:7.2, backlogs:0, skills:'Python, ML', resume:'ananya_resume.pdf', status:'approved'},
+      {id:uid('stu'), name:'Suresh Naidu', branch:'CSE', batch:'2026', cgpa:5.9, backlogs:2, skills:'C++, DSA', resume:'suresh_resume.pdf', status:'approved'},
+    ];
+    await setList('students', students);
+  }
+  let recruiters = await getList('recruiters');
+  if(recruiters.length === 0){
+    recruiters = [
+      {id:uid('rec'), name:'Priya Menon', company:'Nimbus Cloudworks', designation:'HR Manager', status:'approved'},
+      {id:uid('rec'), name:'Arvind Rao', company:'Rangoli Fintech', designation:'Talent Lead', status:'approved'},
+    ];
+    await setList('recruiters', recruiters);
+  }
+}
+
+/* eligibility check */
+function isEligible(student, drive){
+  if(student.cgpa < drive.cgpaCutoff) return false;
+  if(drive.branch !== 'ANY'){
+    const allowed = drive.branch.split(',').map(s=>s.trim());
+    if(!allowed.includes(student.branch)) return false;
+  }
+  if(drive.backlogRule === 'no-active' && student.backlogs > 0) return false;
+  if(drive.backlogRule === 'max-1' && student.backlogs > 1) return false;
+  if(drive.backlogRule === 'max-2' && student.backlogs > 2) return false;
+  return true;
+}
+
+/* ================= RENDER: TOP RIGHT ================= */
+async function renderTopRight(){
+  const el = document.getElementById('topRight');
+  if(!currentUser){ el.innerHTML = ''; return; }
+  const roleLabel = {admin:'PLACEMENT OFFICER', recruiter:'RECRUITER', student:'STUDENT', coordinator:'TPC COORDINATOR'}[currentUser.role];
+  const notifs = await buildNotifications();
+  el.innerHTML = `
+    <span class="pill">${roleLabel}</span>
+    <span>${currentUser.name}</span>
+    <div class="bell-wrap">
+      <button class="bell-btn" onclick="toggleNotifPanel(event)">
+        &#128276;
+        ${notifs.length ? `<span class="bell-dot">${notifs.length}</span>` : ''}
+      </button>
+      <div class="notif-panel" id="notifPanel" style="display:none;">
+        ${notifs.length ? notifs.map(n=>`<div class="notif-item">${n.text}<div class="n-time">${n.time}</div></div>`).join('')
+          : '<div class="notif-item">No new notifications.</div>'}
+      </div>
+    </div>
+    <button class="logout-btn" onclick="logout()">Log out</button>
+  `;
+}
+
+function toggleNotifPanel(e){
+  e.stopPropagation();
+  const p = document.getElementById('notifPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', ()=>{
+  const p = document.getElementById('notifPanel');
+  if(p) p.style.display = 'none';
+});
+
+/* dynamically derive notifications instead of a persisted feed */
+async function buildNotifications(){
+  if(!currentUser) return [];
+  const drives = await getList('drives');
+  const apps = await getList('applications');
+  const students = await getList('students');
+  const notifs = [];
+
+  if(currentUser.role === 'student'){
+    const me = students.find(s=>s.id===currentUser.id);
+    if(me){
+      drives.filter(d=>d.status==='open' && isEligible(me,d)).forEach(d=>{
+        notifs.push({text:`You're eligible for <b>${d.company}</b> &mdash; ${d.role}. Deadline ${d.deadline}.`, time:'Eligibility alert'});
+      });
+      apps.filter(a=>a.studentId===currentUser.id).forEach(a=>{
+        const drv = drives.find(d=>d.id===a.driveId);
+        if(a.status!=='applied' && a.status!=='withdrawn'){
+          notifs.push({text:`Your application to <b>${drv?drv.company:'a company'}</b> is now ${a.status}.`, time:'Status update'});
+        }
+      });
+    }
+  } else if(currentUser.role === 'admin' || currentUser.role === 'coordinator'){
+    const pendingStudents = students.filter(s=>s.status==='pending').length;
+    const recruiters = await getList('recruiters');
+    const pendingRecruiters = recruiters.filter(r=>r.status==='pending').length;
+    if(pendingStudents) notifs.push({text:`${pendingStudents} student registration(s) awaiting approval.`, time:'Approvals'});
+    if(pendingRecruiters) notifs.push({text:`${pendingRecruiters} recruiter registration(s) awaiting approval.`, time:'Approvals'});
+    drives.filter(d=>d.status==='open').forEach(d=>{
+      notifs.push({text:`<b>${d.company}</b> drive closes ${d.deadline}.`, time:'Deadline reminder'});
+    });
+  } else if(currentUser.role === 'recruiter'){
+    const myApps = apps.filter(a=>{
+      const d = drives.find(x=>x.id===a.driveId);
+      return d && d.recruiterName === currentUser.name;
+    });
+    notifs.push({text:`${myApps.length} candidate(s) in your pipeline.`, time:'Pipeline'});
+  }
+  return notifs.slice(0,6);
+}
+
+function goLanding(){ currentUser=null; currentView='landing'; render(); }
+function logout(){ currentUser=null; currentView='landing'; render(); toast('LOGGED OUT'); }
+
+/* ================= LANDING ================= */
+function renderLanding(){
+  return `
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="eyebrow">CENTRALIZED PLACEMENT MANAGEMENT · CODEGNAN</div>
+      <h1>Every drive, on one board.</h1>
+      <p>Placement officers publish drives, students see exactly what they're eligible for, and recruiters track candidates through the pipeline &mdash; no more spreadsheets or WhatsApp threads.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="showRoleSelect()">Enter the system</button>
+        <button class="btn-ghost" onclick="document.getElementById('boardAnchor').scrollIntoView({behavior:'smooth'})">See live drives</button>
+      </div>
+
+      <div id="boardAnchor" class="board">
+        <div class="board-head">
+          <div>COMPANY</div><div>ROLE</div><div>PACKAGE</div><div>DEADLINE</div><div>STATUS</div>
+        </div>
+        <div id="boardRows"></div>
+      </div>
+
+      <div class="stats-strip">
+        <div class="stat"><div class="stat-num" id="statStudents">--</div><div class="stat-label">Students in system</div></div>
+        <div class="stat"><div class="stat-num" id="statDrives">--</div><div class="stat-label">Active drives</div></div>
+        <div class="stat"><div class="stat-num" id="statApps">--</div><div class="stat-label">Applications tracked</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="role-section">
+    <div class="section-title">Choose how you're entering</div>
+    <div class="section-sub">Pick a role to open its dashboard. This is a demo login &mdash; just enter a name.</div>
+    <div class="role-grid">
+      <div class="role-card" onclick="showAuth('admin')">
+        <div class="role-num">01 / PLACEMENT OFFICER</div>
+        <h3>Admin</h3>
+        <p>Publish job drives, set eligibility rules, approve accounts, and get a live view of every drive across branches and batches.</p>
+      </div>
+      <div class="role-card" onclick="showAuth('recruiter')">
+        <div class="role-num">02 / COMPANY SIDE</div>
+        <h3>Recruiter</h3>
+        <p>See applicants for your drives, move candidates through rounds, and update hiring status in real time.</p>
+      </div>
+      <div class="role-card" onclick="showAuth('student')">
+        <div class="role-num">03 / CANDIDATE</div>
+        <h3>Student</h3>
+        <p>See only the drives you're eligible for, apply in one click, and track every application's status in one place.</p>
+      </div>
+      <div class="role-card" onclick="showAuth('coordinator')">
+        <div class="role-num">04 / VIEW-ONLY</div>
+        <h3>TPC Coordinator</h3>
+        <p>Read-only access to drives, students and placement analytics &mdash; for training &amp; placement staff who support the admin.</p>
+      </div>
+    </div>
+  </div>
+  `;
+}
+
+async function populateLandingData(){
+  const drives = await getList('drives');
+  const students = await getList('students');
+  const apps = await getList('applications');
+  const boardRows = document.getElementById('boardRows');
+  if(boardRows){
+    boardRows.innerHTML = drives.slice(0,6).map(d=>`
+      <div class="board-row">
+        <div class="flap">${d.company.toUpperCase()}</div>
+        <div class="board-cell">${d.role}</div>
+        <div class="board-cell">${d.package}</div>
+        <div class="board-cell">${d.deadline}</div>
+        <div><span class="status-chip ${d.status==='open'?'status-open':'status-closing'}">${d.status.toUpperCase()}</span></div>
+      </div>
+    `).join('') || '<div class="empty">No drives published yet.</div>';
+  }
+  const s1=document.getElementById('statStudents'), s2=document.getElementById('statDrives'), s3=document.getElementById('statApps');
+  if(s1) s1.textContent = students.length;
+  if(s2) s2.textContent = drives.filter(d=>d.status!=='closed').length;
+  if(s3) s3.textContent = apps.length;
+}
+
+function showRoleSelect(){
+  document.querySelector('.role-section')?.scrollIntoView({behavior:'smooth'});
+}
+
+/* ================= AUTH ================= */
+function showAuth(role){
+  currentView = 'auth';
+  window._authRole = role;
+  render();
+}
+
+function renderAuth(){
+  const role = window._authRole;
+  const roleLabel = {admin:'Placement Officer', recruiter:'Recruiter', student:'Student', coordinator:'TPC Coordinator'}[role];
+  let extraFields = '';
+  if(role === 'student'){
+    extraFields = `
+      <div class="field"><label>Branch</label>
+        <select id="f_branch"><option>CSE</option><option>IT</option><option>ECE</option><option>MECH</option><option>CIVIL</option></select>
+      </div>
+      <div class="field"><label>Batch</label><input id="f_batch" value="2026"/></div>
+      <div class="field"><label>CGPA</label><input id="f_cgpa" type="number" step="0.1" placeholder="e.g. 7.8"/></div>
+      <div class="field"><label>Active backlogs</label><input id="f_backlogs" type="number" placeholder="0"/></div>
+      <div class="field"><label>Skills</label><input id="f_skills" placeholder="e.g. React, Python"/></div>
+      <div class="field"><label>Resume (filename or link)</label><input id="f_resume" placeholder="e.g. keerthi_resume.pdf"/></div>
+    `;
+  } else if(role === 'recruiter'){
+    extraFields = `
+      <div class="field"><label>Company name</label><input id="f_company" placeholder="e.g. Nimbus Cloudworks"/></div>
+      <div class="field"><label>Designation</label><input id="f_designation" placeholder="e.g. HR Manager"/></div>
+    `;
+  }
+  const needsApproval = (role === 'student' || role === 'recruiter');
+  return `
+  <div class="auth-wrap">
+    <button class="back-link" onclick="currentView='landing';render();">&larr; back</button>
+    <div class="auth-card">
+      <h2>Sign in as ${roleLabel}</h2>
+      <div class="sub">${needsApproval ? 'New accounts are reviewed by the placement admin before dashboard access is granted.' : 'Demo login for internal staff.'}</div>
+      <div class="field"><label>Full name</label><input id="f_name" placeholder="Your name"/></div>
+      <div class="field"><label>${role==='recruiter'?'Company email':'Institute email'}</label><input id="f_email" placeholder="you@example.com"/></div>
+      ${extraFields}
+      <button class="btn-primary" style="width:100%;margin-top:6px;" onclick="submitAuth('${role}')">Continue &rarr;</button>
+      <button class="back-link" style="margin-top:14px;" onclick="openForgotPassword()">Forgot password?</button>
+    </div>
+  </div>
+  `;
+}
+
+function openForgotPassword(){
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h3>Reset password</h3>
+    <div class="field"><label>Institute or company email</label><input id="rp_email" placeholder="you@example.com"/></div>
+    <button class="btn-primary" style="width:100%;" onclick="sendResetLink()">Send reset link</button>
+  `);
+}
+function sendResetLink(){
+  const email = document.getElementById('rp_email').value.trim();
+  closeModal();
+  toast(email ? 'RESET LINK SENT (DEMO)' : 'ENTER AN EMAIL FIRST');
+}
+
+async function submitAuth(role){
+  const name = document.getElementById('f_name').value.trim();
+  if(!name){ toast('ENTER YOUR NAME TO CONTINUE'); return; }
+
+  if(role === 'student'){
+    const cgpa = parseFloat(document.getElementById('f_cgpa').value) || 0;
+    const backlogs = parseInt(document.getElementById('f_backlogs').value) || 0;
+    const branch = document.getElementById('f_branch').value;
+    const batch = document.getElementById('f_batch').value;
+    const skills = document.getElementById('f_skills').value;
+    const resume = document.getElementById('f_resume').value || '—';
+    let students = await getList('students');
+    let existing = students.find(s=>s.name.toLowerCase() === name.toLowerCase());
+    let student;
+    if(existing){
+      student = existing;
+    } else {
+      student = {id:uid('stu'), name, branch, batch, cgpa, backlogs, skills, resume, status:'pending'};
+      students.push(student);
+      await setList('students', students);
+    }
+    currentUser = {id:student.id, name:student.name, role:'student'};
+    if(student.status === 'pending'){ currentView = 'pending'; render(); toast('REGISTRATION SUBMITTED'); return; }
+  } else if(role === 'recruiter'){
+    const company = document.getElementById('f_company').value.trim() || 'Unnamed Co.';
+    const designation = document.getElementById('f_designation').value || '—';
+    let recruiters = await getList('recruiters');
+    let existing = recruiters.find(r=>r.name.toLowerCase() === name.toLowerCase());
+    let recruiter;
+    if(existing){
+      recruiter = existing;
+    } else {
+      recruiter = {id:uid('rec'), name, company, designation, status:'pending'};
+      recruiters.push(recruiter);
+      await setList('recruiters', recruiters);
+    }
+    currentUser = {id:recruiter.id, name:recruiter.name, role:'recruiter', company:recruiter.company};
+    if(recruiter.status === 'pending'){ currentView = 'pending'; render(); toast('REGISTRATION SUBMITTED'); return; }
+  } else if(role === 'coordinator'){
+    currentUser = {id:uid('tpc'), name, role:'coordinator'};
+  } else {
+    currentUser = {id:uid('adm'), name, role:'admin'};
+  }
+  currentView = role;
+  render();
+  toast('WELCOME, ' + name.toUpperCase());
+}
+
+function renderPending(){
+  return `
+  <div class="pending-wrap">
+    <div class="pending-icon">&#9203;</div>
+    <h2 style="margin-bottom:8px;">Registration pending approval</h2>
+    <p style="color:var(--slate);font-size:14px;line-height:1.6;">Your account has been submitted and is waiting for the placement admin to review it. You'll get dashboard access once approved.</p>
+    <button class="btn-ghost" style="margin-top:20px;" onclick="goLanding()">Back to home</button>
+  </div>`;
+}
+
+/* ================= ADMIN DASHBOARD ================= */
+let adminTab = 'overview';
+let studentFilter = {branch:'ALL', minCgpa:'', skill:''};
+
+function renderAdminShell(readOnly){
+  const label = readOnly ? 'TPC COORDINATOR (VIEW-ONLY)' : 'PLACEMENT OFFICER';
+  return `
+  <div class="shell">
+    <div class="sidebar">
+      <div class="side-label">${label}</div>
+      <div class="side-item ${adminTab==='overview'?'active':''}" onclick="adminTab='overview';render();">Overview</div>
+      <div class="side-item ${adminTab==='drives'?'active':''}" onclick="adminTab='drives';render();">Job Drives</div>
+      <div class="side-item ${adminTab==='students'?'active':''}" onclick="adminTab='students';render();">Students</div>
+      <div class="side-item ${adminTab==='applications'?'active':''}" onclick="adminTab='applications';render();">Applications</div>
+      <div class="side-item ${adminTab==='analytics'?'active':''}" onclick="adminTab='analytics';render();">Analytics</div>
+      ${readOnly ? '' : `<div class="side-item ${adminTab==='approvals'?'active':''}" onclick="adminTab='approvals';render();">Approvals</div>`}
+    </div>
+    <div class="content" id="adminContent"><div class="empty">Loading&hellip;</div></div>
+  </div>`;
+}
+
+async function fillAdminContent(readOnly){
+  const el = document.getElementById('adminContent');
+  if(!el) return;
+  const drives = await getList('drives');
+  const students = await getList('students');
+  const apps = await getList('applications');
+  const recruiters = await getList('recruiters');
+
+  if(adminTab === 'overview'){
+    el.innerHTML = `
+      <h1>Overview</h1>
+      <div class="lede">Live snapshot across all branches and batches.</div>
+      <div class="grid-3" style="margin-bottom:24px;">
+        <div class="kpi"><div class="kpi-num">${drives.length}</div><div class="kpi-label">Total drives published</div></div>
+        <div class="kpi"><div class="kpi-num">${students.length}</div><div class="kpi-label">Registered students</div></div>
+        <div class="kpi"><div class="kpi-num">${apps.length}</div><div class="kpi-label">Applications received</div></div>
+      </div>
+      <div class="card">
+        <h3>Drive performance</h3>
+        <table>
+          <tr><th>COMPANY</th><th>ROLE</th><th>ELIGIBLE POOL</th><th>APPLIED</th><th>SELECTED</th></tr>
+          ${drives.map(d=>{
+            const eligible = students.filter(s=>isEligible(s,d)).length;
+            const applied = apps.filter(a=>a.driveId===d.id).length;
+            const selected = apps.filter(a=>a.driveId===d.id && a.status==='selected').length;
+            return `<tr><td>${d.company}</td><td>${d.role}</td><td>${eligible}</td><td>${applied}</td><td>${selected}</td></tr>`;
+          }).join('') || `<tr><td colspan="5" class="empty">No drives yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(adminTab === 'drives'){
+    el.innerHTML = `
+      <h1>Job Drives</h1>
+      <div class="lede">Publish a new drive with eligibility rules &mdash; eligible students are auto-filtered.</div>
+      ${readOnly ? '' : `<button class="btn-primary" style="margin-bottom:20px;" onclick="openDriveModal()">+ Publish new drive</button>`}
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>COMPANY</th><th>ROLE</th><th>PACKAGE</th><th>CGPA CUTOFF</th><th>BRANCH</th><th>DEADLINE</th><th>STATUS</th>${readOnly?'':'<th></th>'}</tr>
+          ${drives.map(d=>`
+            <tr>
+              <td style="padding-left:22px;">${d.company}</td><td>${d.role}</td><td>${d.package}</td>
+              <td>${d.cgpaCutoff}</td><td>${d.branch}</td><td>${d.deadline}</td>
+              <td><span class="tag ${d.status==='open'?'tag-eligible':'tag-withdrawn'}">${d.status.toUpperCase()}</span></td>
+              ${readOnly ? '' : `<td style="padding-right:22px;"><button class="btn-sm" onclick="toggleDriveStatus('${d.id}')">${d.status==='open'?'Close':'Reopen'}</button></td>`}
+            </tr>
+          `).join('') || `<tr><td colspan="8" class="empty">No drives published yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(adminTab === 'students'){
+    const filtered = students.filter(s=>{
+      if(studentFilter.branch !== 'ALL' && s.branch !== studentFilter.branch) return false;
+      if(studentFilter.minCgpa && s.cgpa < parseFloat(studentFilter.minCgpa)) return false;
+      if(studentFilter.skill && !(s.skills||'').toLowerCase().includes(studentFilter.skill.toLowerCase())) return false;
+      return true;
+    });
+    el.innerHTML = `
+      <h1>Students</h1>
+      <div class="lede">All registered candidates. Search and filter by branch, CGPA, or skill.</div>
+      <div class="filter-bar">
+        <select onchange="studentFilter.branch=this.value;render();">
+          <option value="ALL" ${studentFilter.branch==='ALL'?'selected':''}>All branches</option>
+          <option ${studentFilter.branch==='CSE'?'selected':''}>CSE</option>
+          <option ${studentFilter.branch==='IT'?'selected':''}>IT</option>
+          <option ${studentFilter.branch==='ECE'?'selected':''}>ECE</option>
+          <option ${studentFilter.branch==='MECH'?'selected':''}>MECH</option>
+          <option ${studentFilter.branch==='CIVIL'?'selected':''}>CIVIL</option>
+        </select>
+        <input placeholder="Min CGPA" type="number" step="0.1" value="${studentFilter.minCgpa}" onchange="studentFilter.minCgpa=this.value;render();"/>
+        <input placeholder="Skill contains&hellip;" value="${studentFilter.skill}" onchange="studentFilter.skill=this.value;render();"/>
+      </div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>NAME</th><th>BRANCH</th><th>BATCH</th><th>CGPA</th><th>BACKLOGS</th><th>SKILLS</th><th>RESUME</th><th>STATUS</th></tr>
+          ${filtered.map(s=>`
+            <tr><td style="padding-left:22px;">${s.name}</td><td>${s.branch}</td><td>${s.batch}</td><td>${s.cgpa}</td><td>${s.backlogs}</td><td>${s.skills||'—'}</td><td>${s.resume||'—'}</td>
+            <td style="padding-right:22px;">${s.status==='pending' ? '<span class="badge-pending">PENDING</span>' : '<span class="tag tag-eligible">APPROVED</span>'}</td></tr>
+          `).join('') || `<tr><td colspan="8" class="empty">No students match this filter.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(adminTab === 'approvals' && !readOnly){
+    const pendingStudents = students.filter(s=>s.status==='pending');
+    const pendingRecruiters = recruiters.filter(r=>r.status==='pending');
+    el.innerHTML = `
+      <h1>Approvals</h1>
+      <div class="lede">New registrations wait here until an admin approves them.</div>
+      <div class="card">
+        <h3>Students (${pendingStudents.length})</h3>
+        <table>
+          <tr><th>NAME</th><th>BRANCH</th><th>CGPA</th><th></th></tr>
+          ${pendingStudents.map(s=>`
+            <tr><td style="padding-left:2px;">${s.name}</td><td>${s.branch}</td><td>${s.cgpa}</td>
+            <td><button class="btn-sm solid" onclick="approveUser('student','${s.id}')">Approve</button><button class="btn-sm danger" onclick="rejectUser('student','${s.id}')">Reject</button></td></tr>
+          `).join('') || `<tr><td colspan="4" class="empty">No pending students.</td></tr>`}
+        </table>
+      </div>
+      <div class="card">
+        <h3>Recruiters (${pendingRecruiters.length})</h3>
+        <table>
+          <tr><th>NAME</th><th>COMPANY</th><th>DESIGNATION</th><th></th></tr>
+          ${pendingRecruiters.map(r=>`
+            <tr><td style="padding-left:2px;">${r.name}</td><td>${r.company}</td><td>${r.designation}</td>
+            <td><button class="btn-sm solid" onclick="approveUser('recruiter','${r.id}')">Approve</button><button class="btn-sm danger" onclick="rejectUser('recruiter','${r.id}')">Reject</button></td></tr>
+          `).join('') || `<tr><td colspan="4" class="empty">No pending recruiters.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(adminTab === 'analytics'){
+    const branches = [...new Set(students.map(s=>s.branch))];
+    const branchStats = branches.map(b=>{
+      const total = students.filter(s=>s.branch===b).length;
+      const placed = students.filter(s=>s.branch===b && apps.some(a=>a.studentId===s.id && a.status==='selected')).length;
+      const pct = total ? Math.round((placed/total)*100) : 0;
+      const pkgs = apps.filter(a=>a.status==='selected').map(a=>{
+        const s = students.find(x=>x.id===a.studentId);
+        const d = drives.find(x=>x.id===a.driveId);
+        if(s && d && s.branch===b){ const n = parseFloat(d.package); return isNaN(n)?null:n; }
+        return null;
+      }).filter(n=>n!==null);
+      const avgPkg = pkgs.length ? (pkgs.reduce((a,b)=>a+b,0)/pkgs.length).toFixed(1) : '—';
+      return {branch:b, total, placed, pct, avgPkg};
+    });
+
+    const totalApplied = apps.length;
+    const totalShortlisted = apps.filter(a=>['shortlisted','interview','selected'].includes(a.status)).length;
+    const totalInterview = apps.filter(a=>['interview','selected'].includes(a.status)).length;
+    const totalSelected = apps.filter(a=>a.status==='selected').length;
+
+    const unplaced = students.filter(s=>!apps.some(a=>a.studentId===s.id && a.status==='selected'));
+    const placedSkillSet = {};
+    apps.filter(a=>a.status==='selected').forEach(a=>{
+      const s = students.find(x=>x.id===a.studentId);
+      (s?.skills||'').split(',').map(x=>x.trim()).filter(Boolean).forEach(sk=>{ placedSkillSet[sk]=(placedSkillSet[sk]||0)+1; });
+    });
+    const topPlacedSkills = Object.entries(placedSkillSet).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
+
+    el.innerHTML = `
+      <h1>Analytics</h1>
+      <div class="lede">Branch-wise placement, drive-wise conversion, and skill gap for unplaced students.</div>
+
+      <div class="card">
+        <h3>Branch-wise placement %</h3>
+        ${branchStats.map(b=>`
+          <div class="bar-row">
+            <div class="bar-label">${b.branch}</div>
+            <div class="bar-track"><div class="bar-fill amber" style="width:${b.pct}%;"><span>${b.pct}%</span></div></div>
+          </div>
+        `).join('') || '<div class="empty">No student data yet.</div>'}
+      </div>
+
+      <div class="card">
+        <h3>Drive-wise conversion funnel (all drives combined)</h3>
+        <div class="funnel-row">
+          <div class="funnel-step"><div class="funnel-num">${totalApplied}</div><div class="funnel-lbl">APPLIED</div></div>
+          <div class="funnel-arrow">&rarr;</div>
+          <div class="funnel-step"><div class="funnel-num">${totalShortlisted}</div><div class="funnel-lbl">SHORTLISTED</div></div>
+          <div class="funnel-arrow">&rarr;</div>
+          <div class="funnel-step"><div class="funnel-num">${totalInterview}</div><div class="funnel-lbl">INTERVIEW</div></div>
+          <div class="funnel-arrow">&rarr;</div>
+          <div class="funnel-step"><div class="funnel-num">${totalSelected}</div><div class="funnel-lbl">OFFERED</div></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Average package by branch</h3>
+          <table>
+            <tr><th>BRANCH</th><th>AVG PACKAGE (LPA)</th></tr>
+            ${branchStats.map(b=>`<tr><td>${b.branch}</td><td>${b.avgPkg}</td></tr>`).join('') || '<tr><td colspan="2" class="empty">No offers yet.</td></tr>'}
+          </table>
+        </div>
+        <div class="card">
+          <h3>Skill gap &mdash; unplaced students</h3>
+          <p style="font-size:13px;color:var(--slate);margin:0 0 10px;">${unplaced.length} students not yet placed. Top skills among <b>placed</b> students for comparison:</p>
+          <p style="font-size:13px;">${topPlacedSkills.length ? topPlacedSkills.join(', ') : 'No placements recorded yet.'}</p>
+        </div>
+      </div>
+
+      ${readOnly ? '' : `<button class="btn-ghost" onclick="exportAnalyticsCsv()">Export report (CSV)</button>`}
+    `;
+  }
+
+  if(adminTab === 'applications'){
+    el.innerHTML = `
+      <h1>Applications</h1>
+      <div class="lede">Every application across every drive.</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>STUDENT</th><th>COMPANY / ROLE</th><th>STATUS</th><th>LAST UPDATE</th></tr>
+          ${apps.map(a=>{
+            const stu = students.find(s=>s.id===a.studentId);
+            const drv = drives.find(d=>d.id===a.driveId);
+            return `<tr>
+              <td style="padding-left:22px;">${stu?stu.name:'—'}</td>
+              <td>${drv?drv.company+' · '+drv.role:'—'}</td>
+              <td><span class="tag tag-${a.status}">${a.status.toUpperCase()}</span></td>
+              <td style="padding-right:22px;">${a.roundHistory[a.roundHistory.length-1]||'Applied'}</td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="4" class="empty">No applications yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+}
+
+function openDriveModal(){
+  openModal(`
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h3>Publish a new drive</h3>
+    <div class="field"><label>Company name</label><input id="d_company"/></div>
+    <div class="field"><label>Role</label><input id="d_role"/></div>
+    <div class="field"><label>Package</label><input id="d_package" placeholder="e.g. 6.5 LPA"/></div>
+    <div class="two-col">
+      <div class="field"><label>CGPA cutoff</label><input id="d_cgpa" type="number" step="0.1"/></div>
+      <div class="field"><label>Deadline</label><input id="d_deadline" type="date"/></div>
+    </div>
+    <div class="two-col">
+      <div class="field"><label>Eligible branches</label>
+        <select id="d_branch"><option value="ANY">Any branch</option><option value="CSE">CSE only</option><option value="CSE,IT">CSE, IT</option><option value="CSE,IT,ECE">CSE, IT, ECE</option></select>
+      </div>
+      <div class="field"><label>Backlog rule</label>
+        <select id="d_backlog"><option value="no-active">No active backlogs</option><option value="max-1">Max 1 backlog</option><option value="max-2">Max 2 backlogs</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Recruiter contact name</label><input id="d_recruiter"/></div>
+    <button class="btn-primary" style="width:100%;margin-top:8px;" onclick="createDrive()">Publish drive</button>
+  `);
+}
+
+async function createDrive(){
+  const company = document.getElementById('d_company').value.trim();
+  const role = document.getElementById('d_role').value.trim();
+  if(!company || !role){ toast('COMPANY AND ROLE ARE REQUIRED'); return; }
+  const drive = {
+    id: uid('drv'),
+    company, role,
+    package: document.getElementById('d_package').value || '—',
+    cgpaCutoff: parseFloat(document.getElementById('d_cgpa').value) || 0,
+    deadline: document.getElementById('d_deadline').value || 'TBD',
+    branch: document.getElementById('d_branch').value,
+    backlogRule: document.getElementById('d_backlog').value,
+    recruiterName: document.getElementById('d_recruiter').value || 'TBD',
+    status: 'open'
+  };
+  let drives = await getList('drives');
+  drives.unshift(drive);
+  await setList('drives', drives);
+  closeModal();
+  toast('DRIVE PUBLISHED');
+  render();
+}
+
+async function approveUser(type, id){
+  if(type==='student'){
+    let students = await getList('students');
+    const s = students.find(x=>x.id===id); s.status='approved';
+    await setList('students', students);
+  } else {
+    let recruiters = await getList('recruiters');
+    const r = recruiters.find(x=>x.id===id); r.status='approved';
+    await setList('recruiters', recruiters);
+  }
+  toast('APPROVED');
+  render();
+}
+async function rejectUser(type, id){
+  if(type==='student'){
+    let students = await getList('students');
+    students = students.filter(x=>x.id!==id);
+    await setList('students', students);
+  } else {
+    let recruiters = await getList('recruiters');
+    recruiters = recruiters.filter(x=>x.id!==id);
+    await setList('recruiters', recruiters);
+  }
+  toast('REGISTRATION REJECTED');
+  render();
+}
+
+async function exportAnalyticsCsv(){
+  const students = await getList('students');
+  const drives = await getList('drives');
+  const apps = await getList('applications');
+  let rows = [['Branch','Total Students','Placed','Placement %']];
+  const branches = [...new Set(students.map(s=>s.branch))];
+  branches.forEach(b=>{
+    const total = students.filter(s=>s.branch===b).length;
+    const placed = students.filter(s=>s.branch===b && apps.some(a=>a.studentId===s.id && a.status==='selected')).length;
+    rows.push([b, total, placed, total?Math.round((placed/total)*100)+'%':'0%']);
+  });
+  const csv = rows.map(r=>r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'placement_report.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('REPORT DOWNLOADED');
+}
+
+async function toggleDriveStatus(id){
+  let drives = await getList('drives');
+  const d = drives.find(x=>x.id===id);
+  d.status = d.status==='open' ? 'closed' : 'open';
+  await setList('drives', drives);
+  render();
+}
+
+/* ================= RECRUITER DASHBOARD ================= */
+let recruiterTab = 'drives';
+function renderRecruiterShell(){
+  return `
+  <div class="shell">
+    <div class="sidebar">
+      <div class="side-label">RECRUITER · ${currentUser.company||''}</div>
+      <div class="side-item ${recruiterTab==='drives'?'active':''}" onclick="recruiterTab='drives';render();">My Drives</div>
+      <div class="side-item ${recruiterTab==='pipeline'?'active':''}" onclick="recruiterTab='pipeline';render();">Candidate Pipeline</div>
+    </div>
+    <div class="content" id="recruiterContent"><div class="empty">Loading&hellip;</div></div>
+  </div>`;
+}
+
+async function fillRecruiterContent(){
+  const el = document.getElementById('recruiterContent');
+  if(!el) return;
+  const drives = await getList('drives');
+  const apps = await getList('applications');
+  const students = await getList('students');
+
+  if(recruiterTab === 'drives'){
+    el.innerHTML = `
+      <h1>All Job Drives</h1>
+      <div class="lede">Drives visible across the placement cell. Track applicants for each.</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>COMPANY</th><th>ROLE</th><th>DEADLINE</th><th>STATUS</th><th>APPLICANTS</th></tr>
+          ${drives.map(d=>{
+            const count = apps.filter(a=>a.driveId===d.id).length;
+            return `<tr>
+              <td style="padding-left:22px;">${d.company}</td><td>${d.role}</td><td>${d.deadline}</td>
+              <td><span class="tag ${d.status==='open'?'tag-eligible':'tag-withdrawn'}">${d.status.toUpperCase()}</span></td>
+              <td style="padding-right:22px;">${count}</td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="5" class="empty">No drives yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(recruiterTab === 'pipeline'){
+    el.innerHTML = `
+      <h1>Candidate Pipeline</h1>
+      <div class="lede">Move candidates through rounds and update their status.</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>STUDENT</th><th>DRIVE</th><th>STATUS</th><th>ACTIONS</th></tr>
+          ${apps.map(a=>{
+            const stu = students.find(s=>s.id===a.studentId);
+            const drv = drives.find(d=>d.id===a.driveId);
+            return `<tr>
+              <td style="padding-left:22px;">${stu?stu.name:'—'} <span style="color:var(--slate);font-size:12px;">(${stu?stu.branch:''}, CGPA ${stu?stu.cgpa:''})</span></td>
+              <td>${drv?drv.company+' · '+drv.role:'—'}</td>
+              <td><span class="tag tag-${a.status}">${a.status.toUpperCase()}</span></td>
+              <td style="padding-right:22px;">
+                ${a.status==='withdrawn' ? '<span style="color:var(--slate);font-size:12px;">Withdrawn by student</span>' : `
+                <button class="btn-sm" onclick="updateAppStatus('${a.id}','shortlisted')" ${a.status==='selected'||a.status==='rejected'?'disabled':''}>Shortlist</button>
+                <button class="btn-sm" onclick="updateAppStatus('${a.id}','interview')" ${a.status==='selected'||a.status==='rejected'?'disabled':''}>Interview</button>
+                <button class="btn-sm solid" onclick="updateAppStatus('${a.id}','selected')" ${a.status==='rejected'?'disabled':''}>Select</button>
+                <button class="btn-sm danger" onclick="updateAppStatus('${a.id}','rejected')" ${a.status==='selected'?'disabled':''}>Reject</button>
+                `}
+              </td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="4" class="empty">No applications yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+}
+
+async function updateAppStatus(appId, newStatus){
+  let apps = await getList('applications');
+  const a = apps.find(x=>x.id===appId);
+  a.status = newStatus;
+  a.roundHistory.push(newStatus.charAt(0).toUpperCase()+newStatus.slice(1));
+  await setList('applications', apps);
+  toast('STATUS UPDATED');
+  render();
+}
+
+/* ================= STUDENT DASHBOARD ================= */
+let studentTab = 'eligible';
+function renderStudentShell(){
+  return `
+  <div class="shell">
+    <div class="sidebar">
+      <div class="side-label">STUDENT</div>
+      <div class="side-item ${studentTab==='eligible'?'active':''}" onclick="studentTab='eligible';render();">Eligible Drives</div>
+      <div class="side-item ${studentTab==='applications'?'active':''}" onclick="studentTab='applications';render();">My Applications</div>
+      <div class="side-item ${studentTab==='profile'?'active':''}" onclick="studentTab='profile';render();">My Profile</div>
+    </div>
+    <div class="content" id="studentContent"><div class="empty">Loading&hellip;</div></div>
+  </div>`;
+}
+
+async function fillStudentContent(){
+  const el = document.getElementById('studentContent');
+  if(!el) return;
+  const drives = await getList('drives');
+  const apps = await getList('applications');
+  const students = await getList('students');
+  const me = students.find(s=>s.id===currentUser.id);
+  const myApps = apps.filter(a=>a.studentId===currentUser.id);
+
+  if(studentTab === 'eligible'){
+    const eligibleDrives = drives.filter(d=>d.status==='open' && isEligible(me,d));
+    el.innerHTML = `
+      <h1>Eligible Drives</h1>
+      <div class="lede">Auto-filtered against your CGPA (${me.cgpa}), branch (${me.branch}) and backlog count (${me.backlogs}).</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>COMPANY</th><th>ROLE</th><th>PACKAGE</th><th>DEADLINE</th><th></th></tr>
+          ${eligibleDrives.map(d=>{
+            const already = myApps.find(a=>a.driveId===d.id && a.status!=='withdrawn');
+            return `<tr>
+              <td style="padding-left:22px;">${d.company}</td><td>${d.role}</td><td>${d.package}</td><td>${d.deadline}</td>
+              <td style="padding-right:22px;">
+                ${already ? '<span class="tag tag-applied">APPLIED</span>' : `<button class="btn-sm solid" onclick="applyToDrive('${d.id}')">Apply</button>`}
+              </td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="5" class="empty">No eligible drives right now &mdash; check back soon.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(studentTab === 'applications'){
+    el.innerHTML = `
+      <h1>My Applications</h1>
+      <div class="lede">Track every drive you've applied to.</div>
+      <div class="card" style="padding:0;">
+        <table>
+          <tr><th>COMPANY</th><th>ROLE</th><th>STATUS</th><th>HISTORY</th><th></th></tr>
+          ${myApps.map(a=>{
+            const drv = drives.find(d=>d.id===a.driveId);
+            return `<tr>
+              <td style="padding-left:22px;">${drv?drv.company:'—'}</td><td>${drv?drv.role:'—'}</td>
+              <td><span class="tag tag-${a.status}">${a.status.toUpperCase()}</span></td>
+              <td>${a.roundHistory.join(' → ')}</td>
+              <td style="padding-right:22px;">
+                ${(a.status!=='withdrawn' && a.status!=='selected' && a.status!=='rejected') ? `<button class="btn-sm danger" onclick="withdrawApp('${a.id}')">Withdraw</button>` : ''}
+              </td>
+            </tr>`;
+          }).join('') || `<tr><td colspan="5" class="empty">You haven't applied to any drives yet.</td></tr>`}
+        </table>
+      </div>
+    `;
+  }
+
+  if(studentTab === 'profile'){
+    el.innerHTML = `
+      <h1>My Profile</h1>
+      <div class="lede">This is what recruiters and the placement cell see.</div>
+      <div class="card grid-2">
+        <div><div class="kpi-label">NAME</div><div style="font-size:15px;margin-top:4px;">${me.name}</div></div>
+        <div><div class="kpi-label">BRANCH / BATCH</div><div style="font-size:15px;margin-top:4px;">${me.branch} · ${me.batch}</div></div>
+        <div><div class="kpi-label">CGPA</div><div style="font-size:15px;margin-top:4px;">${me.cgpa}</div></div>
+        <div><div class="kpi-label">ACTIVE BACKLOGS</div><div style="font-size:15px;margin-top:4px;">${me.backlogs}</div></div>
+        <div style="grid-column:1/-1;"><div class="kpi-label">SKILLS</div><div style="font-size:15px;margin-top:4px;">${me.skills||'—'}</div></div>
+      </div>
+    `;
+  }
+}
+
+async function applyToDrive(driveId){
+  let apps = await getList('applications');
+  apps.push({id:uid('app'), studentId:currentUser.id, driveId, status:'applied', roundHistory:['Applied']});
+  await setList('applications', apps);
+  toast('APPLICATION SUBMITTED');
+  render();
+}
+
+async function withdrawApp(appId){
+  let apps = await getList('applications');
+  const a = apps.find(x=>x.id===appId);
+  a.status = 'withdrawn';
+  a.roundHistory.push('Withdrawn');
+  await setList('applications', apps);
+  toast('APPLICATION WITHDRAWN');
+  render();
+}
+
+/* ================= MAIN RENDER ================= */
+async function render(){
+  await renderTopRight();
+  const app = document.getElementById('app');
+  if(currentView === 'landing'){
+    app.innerHTML = renderLanding();
+    await populateLandingData();
+  } else if(currentView === 'auth'){
+    app.innerHTML = renderAuth();
+  } else if(currentView === 'pending'){
+    app.innerHTML = renderPending();
+  } else if(currentView === 'admin'){
+    app.innerHTML = renderAdminShell();
+    await fillAdminContent();
+  } else if(currentView === 'coordinator'){
+    if(adminTab === 'approvals') adminTab = 'overview';
+    app.innerHTML = renderAdminShell(true);
+    await fillAdminContent(true);
+  } else if(currentView === 'recruiter'){
+    app.innerHTML = renderRecruiterShell();
+    await fillRecruiterContent();
+  } else if(currentView === 'student'){
+    app.innerHTML = renderStudentShell();
+    await fillStudentContent();
+  }
+}
+
+(async function init(){
+  await seedIfEmpty();
+  render();
+})();
+</script>
+</body>
+</html>
